@@ -61,8 +61,10 @@ Conocimiento que **cualquier rol** carga cuando el trabajo lo pide. Viven en `.a
 | `migraciones-bd` | Cambios de esquema seguros, reversibles y verificados. |
 | `documentar` | Docs y planes que reflejan la realidad. |
 | `commits` | Agrupar cambios en commits atómicos con Conventional Commits. |
-| `supabase-postgres-best-practices` | Rendimiento y buenas prácticas de PostgreSQL (vale sin Supabase). |
-| `impeccable` | Opcional: edición de UI en vivo en el navegador (`live`). |
+| `supabase-postgres-best-practices` | Opcional (`filigranas supabase`): rendimiento y buenas prácticas de PostgreSQL (vale sin Supabase). |
+| `impeccable` | Opcional (`filigranas impeccable`): edición de UI en vivo en el navegador (`live`). |
+
+Las opcionales solo están si el proyecto las instaló; si falta una, sigue sin ella.
 
 **Del proyecto:** listadas en [.agents/proyecto.md](.agents/proyecto.md#skills-del-proyecto).
 
