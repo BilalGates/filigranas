@@ -56,7 +56,7 @@ if (!conf) fallo(`nivel \`${nivel}\` no es barato|medio|fuerte|maximo`);
 // agy en modo plan aborta sin salida si el modelo intenta un comando: se le avisa.
 if (motor === "agy" && !opt.escribir) encargo = `Solo lectura: responde directamente, sin plan, y no ejecutes comandos de terminal; usa solo lectura y búsqueda de ficheros.\n\n${encargo}`;
 
-const id = `${motor}-${nivel}-${new Date().toISOString().replace(/\D/g, "").slice(0, 14)}`;
+const id = `${motor}-${nivel}-${new Date().toISOString().replace(/\D/g, "").slice(0, 14)}-${process.pid}`; // pid: dos delegaciones en el mismo segundo
 const escribir = !!opt.escribir;
 
 if (escribir && !opt.dry) {

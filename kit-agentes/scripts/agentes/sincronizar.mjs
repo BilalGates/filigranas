@@ -16,7 +16,7 @@
  * Lo generado lleva una cabecera "GENERADO" y no se edita a mano.
  */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { basename, join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const FUENTE_AGENTES = join(ROOT, ".agents/agents");
@@ -137,9 +137,11 @@ function volcar(dir, ext, generar) {
     else writeFileSync(ruta, contenido);
   }
   // Lo que sobra en el destino y no viene de la fuente (agentes retirados).
+  // Solo lo generado por el kit: los agentes propios del proyecto no se tocan.
   if (!existsSync(dir)) return;
   for (const nombre of readdirSync(dir)) {
     if (!nombre.endsWith(`.${ext}`) || esperados.has(nombre)) continue;
+    if (!readFileSync(join(dir, nombre), "utf8").includes(AVISO)) continue;
     if (CHECK) desfases.push(`${relative(ROOT, join(dir, nombre))} (sobra)`);
     else rmSync(join(dir, nombre));
   }
@@ -148,27 +150,47 @@ function volcar(dir, ext, generar) {
 function listarArbol(dir, base = dir) {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((n) => {
-    if (n === "__pycache__") return [];
+    if (IGNORAR.has(n)) return [];
     const r = join(dir, n);
     return statSync(r).isDirectory() ? listarArbol(r, base) : [relative(base, r)];
   });
 }
+const IGNORAR = new Set(["__pycache__", ".DS_Store"]);
 
+// Espejo skill a skill: las skills propias de `.claude/skills` no se tocan. El
+// manifiesto `.kit` recuerda cuáles copió el kit, para retirar las que ya no están.
 function espejoSkills(destino) {
-  const fuente = new Set(listarArbol(FUENTE_SKILLS));
-  const dest = new Set(listarArbol(destino));
-  const iguales = (f) => readFileSync(join(FUENTE_SKILLS, f)).equals(readFileSync(join(destino, f)));
-  const distintos = [...fuente].filter((f) => !dest.has(f) || !iguales(f));
-  const sobran = [...dest].filter((f) => !fuente.has(f));
+  const manifiesto = join(destino, ".kit");
+  const skills = readdirSync(FUENTE_SKILLS).filter((n) => statSync(join(FUENTE_SKILLS, n)).isDirectory());
+  const antes = existsSync(manifiesto) ? readFileSync(manifiesto, "utf8").split("\n").filter(Boolean) : [];
+  const retiradas = antes.filter((s) => !skills.includes(s) && existsSync(join(destino, s)));
+  const lista = `${skills.join("\n")}\n`;
+
+  for (const skill of skills) {
+    const src = join(FUENTE_SKILLS, skill);
+    const dst = join(destino, skill);
+    const fuente = new Set(listarArbol(src));
+    const dest = new Set(listarArbol(dst));
+    const iguales = (f) => readFileSync(join(src, f)).equals(readFileSync(join(dst, f)));
+    const distintos = [...fuente].filter((f) => !dest.has(f) || !iguales(f));
+    const sobran = [...dest].filter((f) => !fuente.has(f));
+    if (CHECK) {
+      desfases.push(...distintos.map((f) => relative(ROOT, join(dst, f))));
+      desfases.push(...sobran.map((f) => `${relative(ROOT, join(dst, f))} (sobra)`));
+    } else if (distintos.length || sobran.length) {
+      rmSync(dst, { recursive: true, force: true });
+      cpSync(src, dst, { recursive: true, filter: (s) => !IGNORAR.has(basename(s)) });
+    }
+  }
+
   if (CHECK) {
-    desfases.push(...distintos.map((f) => relative(ROOT, join(destino, f))));
-    desfases.push(...sobran.map((f) => `${relative(ROOT, join(destino, f))} (sobra)`));
+    desfases.push(...retiradas.map((s) => `${relative(ROOT, join(destino, s))} (sobra)`));
+    if (!existsSync(manifiesto) || readFileSync(manifiesto, "utf8") !== lista) desfases.push(relative(ROOT, manifiesto));
     return;
   }
-  if (distintos.length || sobran.length) {
-    rmSync(destino, { recursive: true, force: true });
-    cpSync(FUENTE_SKILLS, destino, { recursive: true, filter: (s) => !s.includes("__pycache__") });
-  }
+  for (const s of retiradas) rmSync(join(destino, s), { recursive: true, force: true });
+  mkdirSync(destino, { recursive: true });
+  writeFileSync(manifiesto, lista);
 }
 
 volcar(join(ROOT, ".claude/agents"), "md", claude);

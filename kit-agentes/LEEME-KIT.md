@@ -19,14 +19,13 @@ Un equipo de 8 agentes, la skill central `filigrana` (criterio de código, dise�
 
 Requisitos: Node 18+ y git.
 
-1. Descomprime el kit **en la raíz del proyecto**. Si el proyecto ya tiene `AGENTS.md`, guárdalo antes: sus reglas pasarán a `.agents/proyecto.md` en la inducción.
-2. Ejecuta:
+1. Desde cualquier carpeta del proyecto ejecuta:
    ```bash
-   node scripts/agentes/instalar.mjs
+   filigranas   # alias de: node ~/repositorios/filigranas/kit-agentes/scripts/agentes/instalar.mjs
    ```
-   Activa los git hooks, crea `CLAUDE.md` apuntando a `AGENTS.md` y genera los agentes para cada herramienta.
-3. Abre el proyecto con tu herramienta y pide: **"Pep, haz la inducción del proyecto"**. Pep analiza el repositorio y escribe `.agents/proyecto.md` (stack, comandos, ramas, reglas), y te propone las skills propias del proyecto.
-4. Commitea el resultado (o pídeselo a Larry).
+   Copia el kit a la raíz (un `AGENTS.md` propio pasa a `.agents/proyecto.md`; un `.githooks` propio no se toca), activa los git hooks salvo que ya haya otro gestor (husky), crea `CLAUDE.md` apuntando a `AGENTS.md` y genera los agentes para cada herramienta. Volver a ejecutarlo **actualiza** el kit.
+2. Abre el proyecto con tu herramienta y pide: **"Pep, haz la inducción del proyecto"**. Pep analiza el repositorio y escribe `.agents/proyecto.md` (stack, comandos, ramas, reglas), y te propone las skills propias del proyecto.
+3. Commitea el resultado (o pídeselo a Larry).
 
 Opcional, en `package.json`:
 
