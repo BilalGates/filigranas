@@ -13,7 +13,7 @@
  */
 import { execFileSync } from "node:child_process";
 
-const git = (...a) => execFileSync("git", a, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+const git = (...a) => execFileSync("git", a, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] });
 
 // ── 1. Ficheros cambiados (indice + arbol + nuevos sin seguimiento) ─────────
 const estado = git("status", "--porcelain=v1", "-z", "--untracked-files=all")
@@ -46,7 +46,8 @@ const rama = intentar("branch", "--show-current") || "(HEAD suelto)";
 const base = intentar("rev-parse", "--verify", "--quiet", "origin/main") ? "origin/main" : "";
 const [detras, delante] = base ? intentar("rev-list", "--left-right", "--count", `${base}...HEAD`).split(/\s+/) : [];
 console.log(`Rama ${rama}${base ? ` · ${delante} por delante / ${detras} por detras de ${base} (ultimo fetch)` : ""}`);
-console.log(`Ultimos commits:\n${git("log", "-5", "--format=  %h %s").trimEnd()}`);
+// Repo recien creado: sin HEAD, ni log ni diff contra HEAD.
+console.log(`Ultimos commits:\n${(intentar("log", "-5", "--format=%h %s") || "(ninguno)").replace(/^/gm, "  ")}`);
 console.log("");
 
 if (!ficheros.length) {
@@ -114,7 +115,7 @@ for (const g of grupos.values()) {
 
 // Lineas cambiadas por fichero, para que Larry sepa que diffs mirar.
 const numstat = new Map();
-for (const l of git("diff", "HEAD", "--numstat").split("\n").filter(Boolean)) {
+for (const l of intentar("diff", "HEAD", "--numstat").split("\n").filter(Boolean)) {
   const [mas, menos, ruta] = l.split("\t");
   numstat.set(ruta, `+${mas}/-${menos}`);
 }

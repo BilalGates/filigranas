@@ -18,7 +18,7 @@ const COMENTARIO = /^\s*(\/\/|\/?\*|<!--)/;
 const REGLAS = [
   ["gradiente-ia", /(from|via|to)-(purple|violet|indigo|fuchsia)-\d|gradient\([^)]*(purple|violet|indigo|#8b5cf6|#a855f7|#7c3aed|#6366f1)/i, "gradiente morado/índigo: color plano + un único acento"],
   ["acento-de-stock", /#(3b82f6|2563eb|1d4ed8|6366f1|4f46e5|8b5cf6|7c3aed|a855f7|9333ea|0ea5e9|2f5bea)\b/i, "azul/índigo/violeta de stock de Tailwind: un color propio"],
-  ["radio-grande", /\brounded-(xl|2xl|3xl)\b|border-radius:\s*(1[2-9]|[2-9]\d)px/, "radio ≥12px: 2–8px como máximo"],
+  ["radio-grande", /\brounded-(xl|2xl|3xl)\b|border-radius:\s*(1[2-9]|[2-9]\d|\d{3,})px/, "radio ≥12px: 2–8px como máximo"],
   ["sombra-estructura", /\bshadow-(lg|xl|2xl)\b/, "sombra grande: filete de 1px; la sombra solo para lo que flota"],
   ["transition-all", /transition:\s*all\b|\btransition-all\b/, "anima una propiedad concreta (transform, opacity)"],
   ["rebote", /animate-bounce|type:\s*["']spring|easeOutBack|cubic-bezier\([^)]*\b1\.\d/, "sin rebotes: cubic-bezier(.22,1,.36,1), 120–240ms"],
@@ -55,7 +55,7 @@ for (const raiz of raices) {
 }
 
 const MAX = 200;
-const ancho = Math.min(60, Math.max(0, ...hits.map((h) => h[0].length)));
+const ancho = Math.min(60, Math.max(0, ...hits.slice(0, MAX).map((h) => h[0].length)));
 for (const [donde, regla, sug] of hits.slice(0, MAX)) console.log(`${donde.padEnd(ancho)}  ${regla.padEnd(17)}  ${sug}`);
 if (hits.length > MAX) console.log(`… ${hits.length - MAX} más`);
 
