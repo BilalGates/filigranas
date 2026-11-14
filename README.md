@@ -7,6 +7,16 @@ Kit de agentes y skills para trabajar con **Claude Code, Codex, OpenCode y Antig
 - Node.js 18 o superior.
 - Git.
 
+## Instalar solo la skill `filigrana`
+
+Un comando, en cualquier máquina con git (macOS o Linux). Queda disponible en todos los proyectos de Claude Code y repetirlo la actualiza:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/BilalGates/filigranas/main/instalar.sh | sh
+```
+
+Clona el repo en `~/.filigranas` (cámbialo con `FILIGRANAS_DIR`) y enlaza la skill en `~/.claude/skills` (o en `$CLAUDE_CONFIG_DIR/skills`). Si ya hay una carpeta `filigrana` propia, no la pisa. Sus scripts necesitan Node 18+.
+
 ## Instalación en un proyecto
 
 Clona este repositorio una vez y ejecuta el instalador **desde el proyecto de destino**:
