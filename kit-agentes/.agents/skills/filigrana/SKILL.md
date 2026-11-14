@@ -1,6 +1,6 @@
 ---
 name: filigrana
-description: "Echa un cable con todo: diseño original y arriesgado con el gusto de Bilal (nunca el aspecto por defecto de la IA), código mínimo estilo ponytail, depuración con el diff más pequeño posible, auditorías medidas de rendimiento y limpieza, y delegación a otras sesiones (claude, codex, opencode, agy) eligiendo el modelo según el razonamiento que pide la tarea. Modos: diseña, depura, audita, revisa, delega. Úsala en cualquier tarea de código o UI, al pedir un diseño, una landing, un dashboard, al corregir un bug, al auditar o al pedir una segunda opinión de otro modelo."
+description: "Criterio de trabajo de Bilal para escribir o cambiar código no trivial (código mínimo estilo ponytail) y cinco modos: diseña (UI original con su gusto, nunca el aspecto por defecto de la IA: landing, dashboard, componente, rediseño), depura (bug, test rojo, CI roto, con el diff más pequeño posible), audita (rendimiento, código muerto, deuda, con medidas), revisa (un diff o una PR) y delega (segunda opinión o tarea paralela en claude, codex, opencode o agy, eligiendo el modelo según el razonamiento que pide). No hace falta para preguntas, explicaciones, comandos sueltos ni cambios triviales de una línea."
 argument-hint: "[diseña|depura|audita|revisa|delega] [encargo]"
 ---
 
@@ -9,8 +9,6 @@ argument-hint: "[diseña|depura|audita|revisa|delega] [encargo]"
 Trabajo fino. Poco código, bien puesto. Diseño con firma propia.
 
 `DIR` = la carpeta de esta skill: `.agents/skills/filigrana` en proyectos con el kit de agentes, `~/.claude/skills/filigrana` en el resto. Los scripts se llaman `node DIR/scripts/<script>.mjs`.
-
-Es la skill central del kit: sustituye a las antiguas `ponytail*`, `depurar`, `rendimiento`, `revision-codigo`, `ui-ux-pro-max`, `design-taste-frontend` y `emil-design-eng`.
 
 ## Modos
 

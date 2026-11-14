@@ -20,9 +20,10 @@
     "maximo": { "modelo": "opencode/gpt-6-astra" }
   },
   "agy": {
+    "_nota": "solo Gemini: un Claude aqui anula la segunda opinion de otro motor",
     "barato": { "modelo": "gemini-3.8-flash-low", "esfuerzo": "low" },
     "medio": { "modelo": "gemini-3.8-flash-high", "esfuerzo": "medium" },
-    "fuerte": { "modelo": "claude-opus-4-6-thinking", "esfuerzo": "high" },
-    "maximo": { "modelo": "claude-opus-4-6-thinking", "esfuerzo": "max" }
+    "fuerte": { "modelo": "gemini-3.8-flash-high", "esfuerzo": "high" },
+    "maximo": { "modelo": "gemini-3.8-flash-high", "esfuerzo": "max" }
   }
 }

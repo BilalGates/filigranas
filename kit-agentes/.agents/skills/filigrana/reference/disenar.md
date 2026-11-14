@@ -31,10 +31,10 @@ Se cambian si el usuario lo pide ("más loco", "más calmado"). MOTION nunca sig
 En trabajos nuevos o rediseños grandes, **tres direcciones** antes de construir:
 
 - Elige tres entradas de `repertorio.md` que encajen con la lectura (o inventa una cuando ninguna encaje). Al menos una ha de ser incómoda.
-- Lanza en paralelo, en solo lectura, una por motor (modelos distintos producen propuestas realmente distintas):
+- Lanza en paralelo, en solo lectura, una por motor (modelos distintos producen propuestas realmente distintas), cada una en su propia llamada a Bash con `run_in_background` y sin polling:
   ```bash
-  node DIR/scripts/delegar.mjs --motor codex --nivel fuerte "<encargo de dirección>" &
-  node DIR/scripts/delegar.mjs --motor agy   --nivel fuerte "<encargo de dirección>" &
+  node DIR/scripts/delegar.mjs --motor codex --nivel fuerte "<encargo de dirección>"
+  node DIR/scripts/delegar.mjs --motor agy   --nivel fuerte "<encargo de dirección>"
   ```
   y la tercera la haces tú (o `--motor claude`).
 - Encargo de dirección: contexto + lectura + dirección asignada + "Devuelve SOLO: tokens (OKLCH, claro y oscuro), pareja tipográfica con escala, rejilla, 3 decisiones de composición, la firma, el movimiento. Sin código de componentes. Prohibido: <anti-lista de gusto.md>".

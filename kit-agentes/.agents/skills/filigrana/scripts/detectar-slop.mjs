@@ -29,7 +29,7 @@ const REGLAS = [
   ["glass", /\bbackdrop-blur(-\w+)?\b|backdrop-filter:\s*blur/, "glassmorphism: solo si es imprescindible"],
   ["fuente-inter", /\bInter\b(?!\s*Tight)|['"]Inter['"]/, "Inter por defecto: justifícalo o elige una pareja propia"],
   ["hex-suelto", /(["'`\[(:]\s*)#[0-9a-fA-F]{3,8}\b/, "color suelto en un componente: usa un token", true],
-  ["emoji", /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u, "emoji: icono de trazo o nada", true],
+  ["emoji", /(?![\u2605\u2606\u2713\u2714\u2717\u2718])[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u, "emoji: icono de trazo o nada", true],
 ];
 
 function* ficheros(ruta) {

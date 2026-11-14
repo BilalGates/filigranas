@@ -16,14 +16,9 @@ node DIR/scripts/delegar.mjs --nivel <barato|medio|fuerte|maximo> --motor <claud
 - `--dry` muestra el comando sin ejecutarlo.
 - `--agente <id>` (proyectos con el kit): antepone "Actúa según `.agents/agents/<id>/agent.md`" y usa el `nivel` de la ficha si no pasas `--nivel`.
 
-## Modelos (fuente única: `scripts/niveles.json`)
+## Modelos
 
-| nivel | claude | codex | opencode | agy |
-|---|---|---|---|---|
-| barato | haiku 5.5 | gpt-6-sol low | deepseek-v4.1-flash-free | gemini-3.8-flash-low |
-| medio | sonnet 5.5 | gpt-6-sol medium | glm-5.3-flash-free | gemini-3.8-flash-high |
-| fuerte | opus 5.5 | gpt-6-sol high | gpt-5.5-pro (necesita saldo) | claude-opus-4-6-thinking |
-| maximo | fable 5.2 | gpt-6-sol xhigh | gpt-6-astra (necesita saldo) | claude-opus-4-6-thinking, effort max |
+El modelo de cada nivel y motor está en `scripts/niveles.json` (fuente única: léelo ahí, no lo copies aquí). `fuerte` y `maximo` de opencode necesitan saldo. `agy` usa siempre Gemini, para que aporte una forma de pensar distinta de la de Claude.
 
 ## Qué motor para qué (por defecto)
 
