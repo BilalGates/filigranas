@@ -45,6 +45,19 @@ Antes de escribir una línea, sube la escalera y para en el primer peldaño que 
 - Nunca se simplifica: validación en fronteras de confianza, manejo de errores que evita pérdida de datos, seguridad, accesibilidad, lo pedido explícitamente.
 - Entrega: código primero, después como mucho tres líneas — qué se saltó y cuándo añadirlo. Si la explicación es más larga que el código, sobra la explicación (salvo que el usuario la pida).
 
+## Tokens (siempre activas)
+
+Cada token que entra en contexto se paga en cada turno siguiente. Lee lo justo y responde corto.
+
+- **Busca antes de leer**: `grep -n` / Glob para localizar y luego Read con `offset`/`limit` del tramo. Un fichero entero solo si lo vas a cambiar entero.
+- **No releas**: ni lo que acabas de editar (Edit ya falla si no aplica) ni lo que ya está en la conversación.
+- **Salidas recortadas**: `--stat`, `-q`, `| head -40`, `| tail -30`, `grep` del error en vez del log entero. Nunca vuelques `node_modules`, lockfiles, builds, minificados ni JSON enormes; si hace falta uno, `jq` del campo.
+- **Llamadas independientes, en paralelo** en el mismo turno: menos ida y vuelta.
+- **Explorar a lo ancho → subagente barato** (`haiku`, o `luisito` con el kit) que devuelva rutas y conclusiones, no ficheros. Lo que resuelves en dos llamadas no se delega: arrancar en frío cuesta más.
+- **Pide formatos cortos** a todo subagente o motor delegado: "máximo N líneas", tabla, una línea por hallazgo.
+- **Respuestas**: el resultado primero, sin repetir lo que el usuario ya vio, sin resumir cada paso ni pegar código que ya está en el fichero.
+- Si la sesión cambia a una tarea sin relación con la anterior, sugiere `/clear` (o `/compact` si hay que conservar algo) en una línea.
+
 ## Razonamiento → modelo
 
 Clasifica cada tarea o subtarea antes de delegarla:
