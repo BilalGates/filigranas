@@ -15,6 +15,16 @@ Un equipo de 8 agentes, la skill central `filigrana` (criterio de código, dise�
 | Larry | `larry` | Git y GitHub: commits rápidos y consultas del repo (nunca push ni merge) |
 | Jose Plasencia | `jose` | Operador de infraestructura |
 
+## Instalar en Claude Code (una vez por máquina)
+
+```bash
+filigranas --global              # añade `impeccable` y/o `supabase` para las opcionales
+```
+
+Enlaza las skills del kit en `~/.claude/skills` y genera el equipo en `~/.claude/agents`: quedan disponibles en **todos** los proyectos de Claude Code sin instalar nada en cada uno. Las skills son enlaces al kit, así que un `git pull` del kit las actualiza; tras cambiar un agente vuelve a ejecutar `filigranas --global`. Una skill propia con el mismo nombre en `~/.claude/skills` no se pisa.
+
+La instalación por proyecto (abajo) solo hace falta para Codex, OpenCode o Antigravity, para los git hooks o para que el kit viaje con el repo (equipo, CI, sesiones en la nube). Si coinciden, las fichas del proyecto mandan sobre las globales.
+
 ## Instalar en un proyecto
 
 Requisitos: Node 18+ y git.

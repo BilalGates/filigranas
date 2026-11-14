@@ -1,6 +1,6 @@
 ---
 name: filigrana
-description: "Echa un cable con todo: diseño original y arriesgado con el gusto de Bilal (nunca el aspecto por defecto de la IA), código mínimo estilo ponytail, depuración con el diff más pequeño posible, auditorías medidas de rendimiento y limpieza, y delegación a otras sesiones (claude, codex, opencode, agy) eligiendo el modelo según el razonamiento que pide la tarea. Modos: diseña, depura, audita, revisa, delega. Úsala en cualquier tarea de código o UI, al pedir un diseño, una landing, un dashboard, al corregir un bug, al auditar o al pedir una segunda opinión de otro modelo."
+description: "Criterio de trabajo de Bilal para escribir o cambiar código no trivial (código mínimo estilo ponytail) y cinco modos: diseña (UI original con su gusto, nunca el aspecto por defecto de la IA: landing, dashboard, componente, rediseño), depura (bug, test rojo, CI roto, con el diff más pequeño posible), audita (rendimiento, código muerto, deuda, con medidas), revisa (un diff o una PR) y delega (segunda opinión o tarea paralela en claude, codex, opencode o agy, eligiendo el modelo según el razonamiento que pide). No hace falta para preguntas, explicaciones, comandos sueltos ni cambios triviales de una línea."
 argument-hint: "[diseña|depura|audita|revisa|delega] [encargo]"
 ---
 
@@ -9,8 +9,6 @@ argument-hint: "[diseña|depura|audita|revisa|delega] [encargo]"
 Trabajo fino. Poco código, bien puesto. Diseño con firma propia.
 
 `DIR` = la carpeta de esta skill: `.agents/skills/filigrana` en proyectos con el kit de agentes, `~/.claude/skills/filigrana` en el resto. Los scripts se llaman `node DIR/scripts/<script>.mjs`.
-
-Es la skill central del kit: sustituye a las antiguas `ponytail*`, `depurar`, `rendimiento`, `revision-codigo`, `ui-ux-pro-max`, `design-taste-frontend` y `emil-design-eng`.
 
 ## Modos
 
@@ -46,6 +44,19 @@ Antes de escribir una línea, sube la escalera y para en el primer peldaño que 
 - Lógica no trivial deja **una** comprobación ejecutable (un test o un assert), no una suite.
 - Nunca se simplifica: validación en fronteras de confianza, manejo de errores que evita pérdida de datos, seguridad, accesibilidad, lo pedido explícitamente.
 - Entrega: código primero, después como mucho tres líneas — qué se saltó y cuándo añadirlo. Si la explicación es más larga que el código, sobra la explicación (salvo que el usuario la pida).
+
+## Tokens (siempre activas)
+
+Cada token que entra en contexto se paga en cada turno siguiente. Lee lo justo y responde corto.
+
+- **Busca antes de leer**: `grep -n` / Glob para localizar y luego Read con `offset`/`limit` del tramo. Un fichero entero solo si lo vas a cambiar entero.
+- **No releas**: ni lo que acabas de editar (Edit ya falla si no aplica) ni lo que ya está en la conversación.
+- **Salidas recortadas**: `--stat`, `-q`, `| head -40`, `| tail -30`, `grep` del error en vez del log entero. Nunca vuelques `node_modules`, lockfiles, builds, minificados ni JSON enormes; si hace falta uno, `jq` del campo.
+- **Llamadas independientes, en paralelo** en el mismo turno: menos ida y vuelta.
+- **Explorar a lo ancho → subagente barato** (`haiku`, o `luisito` con el kit) que devuelva rutas y conclusiones, no ficheros. Lo que resuelves en dos llamadas no se delega: arrancar en frío cuesta más.
+- **Pide formatos cortos** a todo subagente o motor delegado: "máximo N líneas", tabla, una línea por hallazgo.
+- **Respuestas**: el resultado primero, sin repetir lo que el usuario ya vio, sin resumir cada paso ni pegar código que ya está en el fichero.
+- Si la sesión cambia a una tarea sin relación con la anterior, sugiere `/clear` (o `/compact` si hay que conservar algo) en una línea.
 
 ## Razonamiento → modelo
 
