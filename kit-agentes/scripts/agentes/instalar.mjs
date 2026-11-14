@@ -4,6 +4,10 @@
  *
  *   filigranas                                  # alias de la linea de abajo
  *   node ~/repositorios/filigranas/kit-agentes/scripts/agentes/instalar.mjs
+ *   filigranas --global [impeccable] [supabase]
+ *       # una sola vez por maquina: equipo y skills en ~/.claude para todos los
+ *       # proyectos de Claude Code. Repetir tras actualizar el kit (las skills son
+ *       # enlaces y se actualizan solas; los agentes se regeneran).
  *
  * 0. Si se lanza desde el kit, copia el kit a la raiz del proyecto. Un AGENTS.md
  *    propio pasa a .agents/proyecto.md; un .githooks propio no se toca.
@@ -27,11 +31,20 @@ const git = (...a) => {
   }
 };
 
+const KIT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+
+if (process.argv.includes("--global")) {
+  execFileSync(process.execPath, [join(KIT, "scripts/agentes/sincronizar.mjs"), ...process.argv.slice(2)], { cwd: KIT, stdio: "inherit" });
+  console.log(`ok  equipo y skills del kit en ~/.claude: disponibles en todos los proyectos de Claude Code.
+    Instalar en un proyecto (filigranas sin --global) solo hace falta para Codex,
+    OpenCode, Antigravity, los git hooks o para compartir el kit con el equipo.`);
+  process.exit(0);
+}
+
 // Desde cualquier subcarpeta: se instala en la raiz del repo.
 const raiz = git("rev-parse", "--show-toplevel");
 if (raiz) process.chdir(raiz);
 
-const KIT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 if (KIT.startsWith(`${process.cwd()}/`)) {
   console.error("!!  Este es el repo que contiene el kit: lanza filigranas en otro proyecto.");
   process.exit(1);

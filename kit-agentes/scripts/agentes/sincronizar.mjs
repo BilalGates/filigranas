@@ -12,16 +12,22 @@
  *
  *   node scripts/agentes/sincronizar.mjs           # escribe
  *   node scripts/agentes/sincronizar.mjs --check   # falla si algo esta desincronizado
+ *   node scripts/agentes/sincronizar.mjs --global [impeccable] [supabase]
+ *       # desde el kit: agentes en ~/.claude/agents y skills enlazadas en ~/.claude/skills
+ *       # (Claude Code en todos los proyectos, sin instalar nada en cada uno)
  *
  * Lo generado lleva una cabecera "GENERADO" y no se edita a mano.
  */
 import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, readlinkSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const FUENTE_AGENTES = join(ROOT, ".agents/agents");
 const FUENTE_SKILLS = join(ROOT, ".agents/skills");
 const CHECK = process.argv.includes("--check");
+const GLOBAL = process.argv.includes("--global");
+const HOME_CLAUDE = join(homedir(), ".claude");
 
 // Nivel neutral → modelo/esfuerzo de cada herramienta. Fuente unica compartida con
 // `delegar.mjs` de filigrana: cambiar alli y regenerar.
@@ -85,7 +91,7 @@ model: ${NIVEL[a.nivel].claude}
 
 <!-- ${AVISO} -->
 
-${a.cuerpo}
+${GLOBAL ? a.cuerpo.replaceAll("node .agents/skills/", "node ~/.claude/skills/") : a.cuerpo}
 `;
 }
 
@@ -153,8 +159,13 @@ function volcar(dir, ext, generar) {
 // ponytail: en Windows sin core.symlinks git deja ficheros de texto; si hay equipo en Windows, volver a copiar.
 function espejoSkills(destino) {
   const manifiesto = join(destino, ".kit");
-  const skills = readdirSync(FUENTE_SKILLS).filter((n) => statSync(join(FUENTE_SKILLS, n)).isDirectory());
+  // Global: las grandes y de nicho solo si se piden (impeccable usa rutas del proyecto).
+  const OPCIONALES = { impeccable: "impeccable", supabase: "supabase-postgres-best-practices" };
   const antes = existsSync(manifiesto) ? readFileSync(manifiesto, "utf8").split("\n").filter(Boolean) : [];
+  const pedidas = [...antes, ...process.argv.slice(2).map((a) => OPCIONALES[a] ?? a)];
+  const skills = readdirSync(FUENTE_SKILLS)
+    .filter((n) => statSync(join(FUENTE_SKILLS, n)).isDirectory())
+    .filter((n) => !GLOBAL || !Object.values(OPCIONALES).includes(n) || pedidas.includes(n));
   const existe = (r) => { try { lstatSync(r); return true; } catch { return false; } };
   const retiradas = antes.filter((s) => !skills.includes(s) && existe(join(destino, s)));
   const lista = `${skills.join("\n")}\n`;
@@ -162,9 +173,14 @@ function espejoSkills(destino) {
   if (!CHECK) mkdirSync(destino, { recursive: true });
   for (const skill of skills) {
     const dst = join(destino, skill);
-    const objetivo = join("../../.agents/skills", skill);
-    const bien = existe(dst) && lstatSync(dst).isSymbolicLink() && readlinkSync(dst) === objetivo;
-    if (bien) continue;
+    const objetivo = GLOBAL ? join(FUENTE_SKILLS, skill) : join("../../.agents/skills", skill);
+    const enlace = existe(dst) && lstatSync(dst).isSymbolicLink();
+    if (enlace && readlinkSync(dst) === objetivo) continue;
+    // En ~/.claude/skills una skill del mismo nombre que no puso el kit es del usuario: no se pisa.
+    if (GLOBAL && existe(dst) && !antes.includes(skill)) {
+      console.log(`!!  ${dst} ya existe y no es del kit: se deja`);
+      continue;
+    }
     if (CHECK) desfases.push(relative(ROOT, dst));
     else {
       rmSync(dst, { recursive: true, force: true }); // copia antigua del kit
@@ -182,10 +198,15 @@ function espejoSkills(destino) {
   writeFileSync(manifiesto, lista);
 }
 
-volcar(join(ROOT, ".claude/agents"), "md", claude);
-volcar(join(ROOT, ".opencode/agents"), "md", opencode);
-volcar(join(ROOT, ".codex/agents"), "toml", codex);
-espejoSkills(join(ROOT, ".claude/skills"));
+if (GLOBAL) {
+  volcar(join(HOME_CLAUDE, "agents"), "md", claude);
+  espejoSkills(join(HOME_CLAUDE, "skills"));
+} else {
+  volcar(join(ROOT, ".claude/agents"), "md", claude);
+  volcar(join(ROOT, ".opencode/agents"), "md", opencode);
+  volcar(join(ROOT, ".codex/agents"), "toml", codex);
+  espejoSkills(join(ROOT, ".claude/skills"));
+}
 
 if (CHECK) {
   if (desfases.length) {
