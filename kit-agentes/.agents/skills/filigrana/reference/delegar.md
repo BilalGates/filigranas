@@ -14,11 +14,17 @@ node DIR/scripts/delegar.mjs --nivel <barato|medio|fuerte|maximo> --motor <claud
 - Imprime solo la respuesta final; la salida completa queda en el log que indica.
 - Para paralelizar, lánzalos con Bash en segundo plano (`run_in_background`) y espera a la notificación; no hagas polling.
 - `--dry` muestra el comando sin ejecutarlo.
-- `--agente <id>` (proyectos con el kit): antepone "Actúa según `.agents/agents/<id>/agent.md`" y usa el `nivel` de la ficha si no pasas `--nivel`.
+- `--agente <id>` (proyectos con el kit): antepone "Actúa según `.agents/agents/<id>/agent.md`" y usa el `nivel` de la ficha si no pasas `--nivel`. Si la ficha tiene `nivel_codex`, ese manda cuando el motor es `codex` (y en los `.codex/agents/*.toml` generados).
 
 ## Modelos
 
 El modelo de cada nivel y motor está en `scripts/niveles.json` (fuente única: léelo ahí, no lo copies aquí). `fuerte` y `maximo` de opencode necesitan saldo. `agy` usa siempre Gemini, para que aporte una forma de pensar distinta de la de Claude.
+
+En Codex, con el plan Plus (20 $) la cuota se agota antes que el dinero. Estimaciones de OpenAI en mensajes cada 5 h: Luna 350–3.000, Sol 15–160, Astra 5–45; consulta la tuya con `/status`.
+
+- **Luna** para buscar, resumir y commits: su cuota es unas 20 veces la de Sol. Además, 6.2 Sol rinde peor que 6.1 contestando preguntas sobre el código (se le escapan datos clave).
+- **Sol** para todo lo demás. En código queda a medio punto de Astra por una quinta parte del coste.
+- **Astra** solo a esfuerzo `low`: cada token cuesta 4 veces lo de Sol y en Plus se agota en pocos turnos. Nunca `xhigh`.
 
 ## Qué motor para qué (por defecto)
 
@@ -26,11 +32,18 @@ El modelo de cada nivel y motor está en `scripts/niveles.json` (fuente única: 
 |---|---|---|
 | Buscar, localizar, resumir | barato | subagente nativo `haiku` (o `opencode` gratis para no gastar cuota) |
 | Construir, depurar con causa clara | medio | esta sesión |
-| Revisión de un diff importante | fuerte | esta sesión + `codex` en paralelo |
-| Auditoría completa | fuerte | esta sesión + `codex` en paralelo |
+| Revisión de un diff | fuerte | esta sesión. Añade `codex` en paralelo **solo** si el diff toca BD, seguridad o credenciales, o si lo pide el usuario |
+| Auditoría completa | fuerte | esta sesión. `codex` en paralelo con la misma condición |
 | Bug sin causa tras 2 hipótesis | fuerte | `codex` |
 | Direcciones de diseño | fuerte | esta sesión + `codex` + `agy` (tres modelos distintos) |
-| Arquitectura, datos, seguridad, decisiones irreversibles | maximo | subagente `fable` o `--motor claude --nivel maximo`, y `codex --nivel maximo` como contraste |
+| Arquitectura, datos, seguridad, decisiones irreversibles | maximo | subagente `fable` o `--motor claude --nivel maximo`; como contraste, **una** llamada a `codex --nivel maximo` por decisión |
+
+## Ahorro de cuota (pensado para planes de 20 $)
+
+- Antes de lanzar `maximo` en Codex, mira `/status`. Si queda poca cuota, baja a `fuerte`.
+- Escribe el encargo con un prefijo fijo (objetivo, rutas, restricciones) y no lo reescribas entre llamadas: así se reaprovecha la caché.
+- No pases de 272K tokens de entrada: por encima, Astra cobra el doble por la entrada y 1,5 veces por la salida en toda la petición. Pasa rutas, no ficheros enteros.
+- Esfuerzo `low` salvo que la tarea pida más. Un esfuerzo más alto gasta más cuota y no siempre mejora el resultado.
 
 ## Encargo autocontenido
 

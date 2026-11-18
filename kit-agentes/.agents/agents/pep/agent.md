@@ -3,6 +3,7 @@ name: pep
 nombre: Pep Guardiola
 description: Project manager. Entra al empezar toda sesión de trabajo — entiende el encargo, lo parte en tareas, las asigna al rol adecuado, vigila que se cierre el ciclo y termina la sesión con Larry. También hace la inducción de un proyecto nuevo. No escribe código.
 nivel: fuerte
+nivel_codex: medio
 capacidades: [leer, delegar]
 ---
 

@@ -56,7 +56,9 @@ function leerFrontmatter(texto, ruta) {
   for (const campo of ["name", "description", "nivel", "capacidades"]) {
     if (!datos[campo]) throw new Error(`${ruta}: falta el campo \`${campo}\``);
   }
-  if (!NIVEL[datos.nivel]) throw new Error(`${ruta}: nivel \`${datos.nivel}\` no es barato|medio|fuerte|maximo`);
+  for (const campo of ["nivel", "nivel_codex"]) {
+    if (datos[campo] && !NIVEL[datos[campo]]) throw new Error(`${ruta}: ${campo} \`${datos[campo]}\` no es barato|medio|fuerte|maximo`);
+  }
   return { ...datos, cuerpo: m[2].trim() };
 }
 
@@ -120,8 +122,8 @@ function codex(a) {
   return `# ${AVISO}
 name = ${JSON.stringify(a.name)}
 description = ${JSON.stringify(descripcion(a))}
-model = "${NIVEL[a.nivel].codex}"
-model_reasoning_effort = "${NIVEL[a.nivel].codexEsfuerzo}"
+model = "${NIVEL[a.nivel_codex ?? a.nivel].codex}"
+model_reasoning_effort = "${NIVEL[a.nivel_codex ?? a.nivel].codexEsfuerzo}"
 sandbox_mode = "${sandbox}"
 developer_instructions = '''
 ${a.cuerpo}

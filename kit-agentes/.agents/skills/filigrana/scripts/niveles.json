@@ -7,17 +7,18 @@
     "maximo": { "modelo": "claude-fable-5-2" }
   },
   "codex": {
-    "barato": { "modelo": "gpt-6-sol", "esfuerzo": "low" },
-    "medio": { "modelo": "gpt-6-sol", "esfuerzo": "medium" },
-    "fuerte": { "modelo": "gpt-6-sol", "esfuerzo": "high" },
-    "maximo": { "modelo": "gpt-6-sol", "esfuerzo": "xhigh" }
+    "_nota": "Plan Plus (20 $): Luna da ~20x la cuota de Sol; Astra ~1/3 de Sol, solo a esfuerzo bajo. IDs probados con codex exec el 18/11/2026.",
+    "barato": { "modelo": "gpt-6-luna", "esfuerzo": "low" },
+    "medio": { "modelo": "gpt-6.2-sol", "esfuerzo": "medium" },
+    "fuerte": { "modelo": "gpt-6.2-sol", "esfuerzo": "high" },
+    "maximo": { "modelo": "gpt-6.2-astra", "esfuerzo": "low" }
   },
   "opencode": {
-    "_nota": "barato/medio gratis; fuerte/maximo necesitan saldo en OpenCode Zen",
+    "_nota": "barato/medio gratis; fuerte/maximo necesitan saldo en OpenCode Zen. gpt-6.2-astra sin probar (opencode no instalado el 18/11/2026).",
     "barato": { "modelo": "opencode/deepseek-v4.1-flash-free" },
     "medio": { "modelo": "opencode/glm-5.3-flash-free" },
     "fuerte": { "modelo": "opencode/gpt-5.5-pro" },
-    "maximo": { "modelo": "opencode/gpt-6-astra" }
+    "maximo": { "modelo": "opencode/gpt-6.2-astra" }
   },
   "agy": {
     "_nota": "solo Gemini: un Claude aqui anula la segunda opinion de otro motor",
