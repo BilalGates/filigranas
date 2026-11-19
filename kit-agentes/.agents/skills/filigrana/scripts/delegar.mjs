@@ -46,7 +46,9 @@ let nivel = opt.nivel;
 if (opt.agente) {
   const ficha = join(dir, ".agents/agents", opt.agente, "agent.md");
   if (!existsSync(ficha)) fallo(`no existe ${ficha}`);
-  nivel ??= readFileSync(ficha, "utf8").match(/^nivel:\s*(\w+)/m)?.[1];
+  const texto = readFileSync(ficha, "utf8");
+  // nivel_codex (opcional) solo cambia el nivel cuando el rol corre en Codex.
+  nivel ??= (motor === "codex" && texto.match(/^nivel_codex:\s*(\w+)/m)?.[1]) || texto.match(/^nivel:\s*(\w+)/m)?.[1];
   encargo = `Actúa según .agents/agents/${opt.agente}/agent.md (léela primero).\n\n${encargo}`;
 }
 nivel ??= "medio";
